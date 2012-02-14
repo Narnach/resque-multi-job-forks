@@ -67,6 +67,7 @@ module Resque
 
     def hijack_fork
       log 'hijack fork.'
+      puts "hijack fork"
       @suppressed_fork_hooks = [Resque.after_fork, Resque.before_fork]
       Resque.after_fork = Resque.before_fork = nil
       @release_fork_limit = fork_job_limit
@@ -76,10 +77,12 @@ module Resque
 
     def release_fork
       log "jobs processed by child: #{jobs_processed}"
+      puts "jobs processed by child: #{jobs_processed}"
       run_hook :before_child_exit, self
       Resque.after_fork, Resque.before_fork = *@suppressed_fork_hooks
       @release_fork_limit = @jobs_processed = @cant_fork = nil
       log 'hijack over, counter terrorists win.'
+      puts 'hijack over, counter terrorists win.'
       @shutdown = true unless $TESTING
       # only the child calls release_fork, and it should exit and not
       # passively shutdown otherwise it will call unregister worker
